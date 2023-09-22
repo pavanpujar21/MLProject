@@ -14,7 +14,7 @@ import os
 
 @dataclass
 class DataTransformationConfig:
-    preprocessor_ob_file_path:str = os.path.join('artifacts',"preprocessor.pkl")
+    preprocessor_ob_file_path = os.path.join('artifacts',"preprocessor.pkl")
 
 class DataTransformation:
     def __init__(self):
@@ -42,7 +42,7 @@ class DataTransformation:
                 steps =[
                     ("imputer", SimpleImputer(strategy="most_frequent")),
                     ("one_hot_encoder", OneHotEncoder()),
-                    ("scaler",StandardScaler())
+                    ("scaler",StandardScaler(with_mean=False))
                 ]
             )
 
@@ -71,7 +71,7 @@ class DataTransformation:
 
             logging.info("Obtaining Preprocessing object")
 
-            preprocessor_obj = self.get_data_transformer_object()
+            preprocessing_obj = self.get_data_transformer_object()
             
             target_column_name = "math_score"
             
@@ -85,8 +85,8 @@ class DataTransformation:
 
             logging.info("Applying preprocessing object on training dataframe and testing dataframe.")
 
-            input_feature_train_arr = preprocessor_obj.fit_transform(input_feature_train_df)
-            input_feature_test_arr = preprocessor_obj.transform(input_feature_test_df)
+            input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)
+            input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)
 
             train_arr = np.c_[
                 input_feature_train_arr, np.array(target_feature_train_df)
@@ -97,7 +97,7 @@ class DataTransformation:
 
             save_object(
                 file_path = self.data_transformation_config.preprocessor_ob_file_path,
-                obj = preprocessor_obj
+                obj = preprocessing_obj
             )
             logging.info(f"Saved preprocessing object.")
 
